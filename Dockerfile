@@ -20,7 +20,8 @@ RUN apt-get update \
         wget \
     && mkdir /build \
     && wget -q -O - https://github.com/pgbackrest/pgbackrest/archive/release/2.30.tar.gz | tar zx -C /build \
-    && cd /build/pgbackrest-release-2.30/src && ./configure && make
+    && cd /build/pgbackrest-release-2.30/src \
+    && ./configure && make
 
 FROM ubuntu:20.04
 
