@@ -1,7 +1,6 @@
 FROM ubuntu:20.04 as builder
 
-#ToDo add mainter see https://docs.docker.com/engine/reference/builder/#label
-LABEL maintainer="<yourname>@<email-provider>"
+LABEL maintainer="donato@wolfisberg.dev"
 ARG version="2.30"
 
 ENV DEBIAN_FRONTEND="noninteractive" TZ="Europe/London"
@@ -9,7 +8,7 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
         gcc \
-        libbz2-dev \ 
+        libbz2-dev \
         liblz4-dev \
         libpq-dev \
         libssl-dev \
@@ -23,13 +22,12 @@ RUN apt-get update \
     && wget -q -O - "https://github.com/pgbackrest/pgbackrest/archive/release/${version}.tar.gz" \
     |  tar zx -C /build \
     && cd "/build/pgbackrest-release-${version}/src" \
-    && ./configure && make
+    && ./configure && make \
+    && mv /build/pgbackrest-release-${version}/src/pgbackrest /build/pgbackrest
 
 FROM ubuntu:20.04
 
-#ToDo add mainter see https://docs.docker.com/engine/reference/builder/#label
-LABEL maintainer="<yourname>@<email-provider>"
-ARG version="2.30"
+LABEL maintainer="donato@wolfisberg.dev"
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -38,7 +36,7 @@ RUN apt-get update \
         postgresql-client
 
 WORKDIR /usr/bin
-COPY --from=builder "/build/pgbackrest-release-${version}/src/pgbackrest" .
+COPY --from=builder "/build/pgbackrest" .
 
 RUN chmod 755 pgbackrest \
     &&  mkdir -p -m 770 /var/log/pgbackrest \
