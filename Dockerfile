@@ -7,16 +7,16 @@ ENV DEBIAN_FRONTEND="noninteractive" TZ="Europe/London"
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
-        make \
         gcc \
+        libbz2-dev \ 
+        liblz4-dev \
         libpq-dev \
         libssl-dev \
         libxml2-dev \
-        pkg-config \
-        liblz4-dev \
-        libzstd-dev \
-        libbz2-dev \ 
         libz-dev \
+        libzstd-dev \
+        make \
+        pkg-config \
         wget \
     && mkdir /build \
     && wget -q -O - https://github.com/pgbackrest/pgbackrest/archive/release/2.30.tar.gz | tar zx -C /build \
