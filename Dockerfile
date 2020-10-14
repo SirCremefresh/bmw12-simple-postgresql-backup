@@ -28,8 +28,8 @@ FROM ubuntu:20.04
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
-        postgresql-client \
-        libxml2
+        libxml2 \
+        postgresql-client
 
 WORKDIR /usr/bin
 COPY --from=builder /build/pgbackrest-release-2.30/src/pgbackrest .
