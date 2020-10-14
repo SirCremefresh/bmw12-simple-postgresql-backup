@@ -20,17 +20,15 @@ RUN apt-get update \
         pkg-config \
         wget \
     && mkdir /build \
-    && \
-    wget -q -O - https://github.com/pgbackrest/pgbackrest/archive/release/${version}.tar.gz \
-        | tar zx -C /build \
-    && cd /build/pgbackrest-release-${version}/src \
+    && wget -q -O - https://github.com/pgbackrest/pgbackrest/archive/release/2.30.tar.gz | tar zx -C /build \
+    && cd /build/pgbackrest-release-2.30/src \
     && ./configure && make
 
 FROM ubuntu:20.04
 
 #ToDo add mainter see https://docs.docker.com/engine/reference/builder/#label
 LABEL maintainer="<yourname>@<email-provider>"
-ARG version
+ARG version="2.30"
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -39,7 +37,7 @@ RUN apt-get update \
         postgresql-client
 
 WORKDIR /usr/bin
-COPY --from=builder /build/pgbackrest-release-${version}/src/pgbackrest .
+COPY --from=builder /build/pgbackrest-release-2.30/src/pgbackrest .
 
 RUN chmod 755 pgbackrest \
     &&  mkdir -p -m 770 /var/log/pgbackrest \
