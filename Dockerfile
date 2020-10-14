@@ -19,7 +19,9 @@ RUN apt-get update \
         pkg-config \
         wget \
     && mkdir /build \
-    && wget -q -O - https://github.com/pgbackrest/pgbackrest/archive/release/2.30.tar.gz | tar zx -C /build \
+    && \
+    wget -q -O - https://github.com/pgbackrest/pgbackrest/archive/release/2.30.tar.gz \
+        | tar zx -C /build \
     && cd /build/pgbackrest-release-2.30/src \
     && ./configure && make
 
