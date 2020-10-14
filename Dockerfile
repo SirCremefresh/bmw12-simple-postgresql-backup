@@ -1,5 +1,8 @@
 FROM ubuntu:20.04 as builder
 
+#ToDo add mainter see https://docs.docker.com/engine/reference/builder/#label
+LABEL maintainer="<yourname>@<email-provider>"
+
 ENV DEBIAN_FRONTEND="noninteractive" TZ="Europe/London"
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install make gcc libpq-dev libssl-dev libxml2-dev pkg-config liblz4-dev libzstd-dev libbz2-dev libz-dev wget -y && \
