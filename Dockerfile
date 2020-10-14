@@ -34,7 +34,6 @@ COPY --from=builder /build/pgbackrest-release-2.30/src/pgbackrest /usr/bin
 
 RUN chmod 755 /usr/bin/pgbackrest \
     &&  mkdir -p -m 770 /var/log/pgbackrest \
-    &&  mkdir -p /etc/pgbackrest \
     &&  mkdir -p /etc/pgbackrest/conf.d \
     &&  touch /etc/pgbackrest/pgbackrest.conf \
     &&  chmod 640 /etc/pgbackrest/pgbackrest.conf
