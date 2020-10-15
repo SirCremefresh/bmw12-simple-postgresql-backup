@@ -36,10 +36,15 @@ RUN apt-get update \
         postgresql-client
 
 WORKDIR /usr/bin
+COPY "./entrypoint.sh" /entrypoint.sh
 COPY --from=builder "/build/pgbackrest" .
 
 RUN chmod 755 pgbackrest \
     &&  mkdir -p -m 770 /var/log/pgbackrest \
     &&  mkdir -p /etc/pgbackrest/conf.d \
     &&  touch /etc/pgbackrest/pgbackrest.conf \
-    &&  chmod 640 /etc/pgbackrest/pgbackrest.conf
+    &&  chmod 640 /etc/pgbackrest/pgbackrest.conf \
+    &&  chmod +x /entrypoint.sh
+
+
+ENTRYPOINT ["/entrypoint.sh"]
