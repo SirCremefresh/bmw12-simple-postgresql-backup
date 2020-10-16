@@ -4,6 +4,8 @@
 [![Image Size](https://img.shields.io/docker/image-size/donatowolfisberg/bmw12-pgbackrest?sort=date)](https://hub.docker.com/r/donatowolfisberg/bmw12-pgbackrest)
 [![Docker Pulls](https://img.shields.io/docker/pulls/donatowolfisberg/bmw12-pgbackrest)](https://hub.docker.com/r/donatowolfisberg/bmw12-pgbackrest)
 
+pg_dump -U donato --host=pg.intra.bmw12.ch -F c donato -f /tmp/mydb.tar.gz
+
 
 docker image: donatowolfisberg/bmw12-pgbackrest
 
