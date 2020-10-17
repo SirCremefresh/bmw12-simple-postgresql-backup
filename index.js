@@ -38,11 +38,14 @@ const s3 = new AWS.S3({
 })()
 
 async function deleteOldBackups(databases) {
+	console.log('[delete]: Deleting old Backups');
+	console.time('[delete]')
 	const databaseSet = new Set(databases)
-	console.log('[file]: get remote files')
-	console.time('[file]')
+	let deleteCount = 0;
+	console.log('[delete-file]: get remote files');
+	console.time('[delete-file]');
 	const files = await getRemoteFiles();
-	console.timeLog('[file]', `got remote files. count: ${files.length}`)
+	console.timeLog('[delete-file]', `got remote files. count: ${files.length}`);
 
 	for (const file of files) {
 		const fileName = file.slice(0, -7);
@@ -55,8 +58,11 @@ async function deleteOldBackups(databases) {
 			console.time(`[delete-db ${fileName}]`);
 			await deleteFile(file);
 			console.timeLog(`[delete-db ${fileName}]`, `Deleted backup`);
+			deleteCount++;
 		}
 	}
+
+	console.timeLog(`[delete]`, ` Deleted ${deleteCount} old backups`)
 }
 
 function getRemoteFiles() {
