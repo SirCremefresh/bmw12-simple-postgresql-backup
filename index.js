@@ -9,7 +9,7 @@ const S3_REGION = getFromEnvOrFail('S3_REGION');
 const S3_ENDPOINT = getFromEnvOrFail('S3_ENDPOINT');
 const BUCKET_NAME = getFromEnvOrFail('BUCKET_NAME');
 const PG_HOST = getFromEnvOrFail('PG_HOST');
-// const PG_PORT = getFromEnvOrFail('PG_PORT');
+const PG_PORT = getFromEnvOrDefault('PG_PORT', 5432);
 const PG_USER = getFromEnvOrFail('PG_USER');
 const PG_DATABASES = getFromEnvOrFail('PG_DATABASES');
 // const TODAY = new Date(Date.parse('2020-10-29'));
@@ -75,7 +75,7 @@ async function createBackup(databaseName) {
 	console.time(`[db ${databaseName}]`)
 	const fileName = getFileName(new Date(), databaseName);
 	const localFilePath = `/tmp/${fileName}`
-	await executeCommand(`pg_dump -U ${PG_USER} --host=${PG_HOST} -F c ${databaseName} -f ${localFilePath}`);
+	await executeCommand(`pg_dump -U ${PG_USER} --host=${PG_HOST} --port=${PG_PORT} -F c ${databaseName} -f ${localFilePath}`);
 	console.timeLog(`[db ${databaseName}]`, `created Backup and saved to ${localFilePath}`)
 	console.log(`[db ${databaseName}]: uploading Backup ${localFilePath} with size ${getFilesizeInMegabytes(localFilePath)}mb`)
 	await uploadFile(localFilePath, fileName);
@@ -123,6 +123,13 @@ function getFromEnvOrFail(name) {
 		return value;
 	console.error(`could not load value from environment. env: ${name}`);
 	process.exit(1);
+}
+
+function getFromEnvOrDefault(name, defaultValue) {
+	const value = process.env[name];
+	if (value)
+		return value;
+	return defaultValue
 }
 
 function executeCommand(command) {
