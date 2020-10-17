@@ -12,7 +12,9 @@ const PG_HOST = getFromEnvOrFail('PG_HOST');
 // const PG_PORT = getFromEnvOrFail('PG_PORT');
 const PG_USER = getFromEnvOrFail('PG_USER');
 const PG_DATABASES = getFromEnvOrFail('PG_DATABASES');
-
+// const TODAY = new Date(Date.parse('2020-10-29'));
+const TODAY = new Date();
+const KEEP_DAYS = 10;
 
 AWS.config.credentials = new AWS.Credentials({
 	accessKeyId: KEY_ID, secretAccessKey: APPLICATION_KEY
@@ -22,39 +24,76 @@ const s3 = new AWS.S3({
 	endpoint: new AWS.Endpoint(S3_ENDPOINT)
 });
 
-// Create a bucket and upload something into it
-// s3.createBucket({Bucket: BUCKET_NAME}, function () {
-// 	var params = {Bucket: bucketName, Key: keyName, Body: 'Hello World!'};
-// 	s3.putObject(params, function (err, data) {
-// 		if (err)
-// 			console.log(err)
-// 		else
-// 			console.log('Successfully uploaded data to ' + bucketName + '/' + keyName);
-// 	});
-// });
-//
-// s3.deleteObject({
-// 	Bucket: BUCKET_NAME,
-// 	Key: 'var/lib/pgbackrest/backup/my_stanza/backup.info'
-// }, (err, data) => console.log(err, data))
-// s3.listObjectsV2({
-// 	Bucket: BUCKET_NAME
-// }, (err, data) => console.log(err, data))
 
-// s3.listBuckets((err, data) => console.log(err, data))
-createBackup('donato')
+(async () => {
+	const databases = PG_DATABASES.split(',');
+	console.log(`creating backup of databases: ${databases.join(', ')}`)
+
+	for (const database of databases) {
+		await createBackup(database)
+	}
+
+	await deleteOldBackups(databases)
+})()
+
+async function deleteOldBackups(databases) {
+	const databaseSet = new Set(databases)
+	console.log('[file]: get remote files')
+	console.time('[file]')
+	const files = await getRemoteFiles();
+	console.timeLog('[file]', `got remote files. count: ${files.length}`)
+
+	for (const file of files) {
+		const fileName = file.slice(0, -7);
+		const fileDate = new Date(Date.parse(file.slice(0, 10)))
+		const fileDatabase = fileName.slice(11)
+		const daysOld = getDiffDays(fileDate, TODAY);
+
+		if (daysOld >= KEEP_DAYS && databaseSet.has(fileDatabase)) {
+			console.log(`[delete-db ${fileName}]: Deleting backup. fileName: ${file}`);
+			console.time(`[delete-db ${fileName}]`);
+			await deleteFile(file);
+			console.timeLog(`[delete-db ${fileName}]`, `Deleted backup`);
+		}
+	}
+}
+
+function getRemoteFiles() {
+	return new Promise((resolve, reject) => {
+		s3.listObjectsV2({
+			Bucket: BUCKET_NAME
+		}, (err, data) => {
+			if (err)
+				reject(err);
+			resolve(data.Contents.map(value => value.Key))
+		})
+	})
+}
 
 async function createBackup(databaseName) {
-	console.log(`[${databaseName}] creating Backup`)
-	console.time(`[${databaseName}]`)
+	console.log(`[db ${databaseName}]: creating Backup`)
+	console.time(`[db ${databaseName}]`)
 	const fileName = getFileName(new Date(), databaseName);
 	const localFilePath = `/tmp/${fileName}`
 	await executeCommand(`pg_dump -U ${PG_USER} --host=${PG_HOST} -F c ${databaseName} -f ${localFilePath}`);
-	console.timeLog(`[${databaseName}]`, `created Backup and saved to ${localFilePath}`)
+	console.timeLog(`[db ${databaseName}]`, `created Backup and saved to ${localFilePath}`)
+	console.log(`[db ${databaseName}]: uploading Backup ${localFilePath} with size ${getFilesizeInMegabytes(localFilePath)}mb`)
 	await uploadFile(localFilePath, fileName);
-	console.timeLog(`[${databaseName}]`, `uploaded Backup`)
+	console.timeLog(`[db ${databaseName}]`, `uploaded Backup`)
 }
 
+async function deleteFile(file) {
+	return new Promise((resolve, reject) => {
+		s3.deleteObject({
+			Bucket: BUCKET_NAME,
+			Key: file
+		}, function (err, data) {
+			if (err)
+				return reject(err);
+			return resolve(data);
+		});
+	});
+}
 
 function uploadFile(localFilePath, fileName) {
 	const readStream = fs.createReadStream(localFilePath);
@@ -74,9 +113,8 @@ function uploadFile(localFilePath, fileName) {
 	});
 }
 
-
 function getFileName(date, databaseName) {
-	return `${('0' + date.getDate()).slice(-2)}-${('0' + date.getMonth()).slice(-2)}-${date.getFullYear()}-${databaseName}.tar.gz`
+	return `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)}-${databaseName}.tar.gz`
 }
 
 function getFromEnvOrFail(name) {
@@ -99,4 +137,13 @@ function executeCommand(command) {
 			}
 		});
 	})
+}
+
+function getDiffDays(first, second) {
+	return Math.round((second - first) / (1000 * 60 * 60 * 24));
+}
+
+function getFilesizeInMegabytes(filename) {
+	const fileSizeInBytes = fs.statSync(filename)['size']
+	return fileSizeInBytes / 1000000.0
 }
