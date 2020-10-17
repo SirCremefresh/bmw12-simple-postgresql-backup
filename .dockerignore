@@ -3,3 +3,4 @@
 */**/tmp
 .env
 node_modules
+k8s-example

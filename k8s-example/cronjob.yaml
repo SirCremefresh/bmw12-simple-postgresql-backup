@@ -1,0 +1,34 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: bmw12-simple-postgresql-backup
+spec:
+  schedule: "0 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: bmw12-simple-postgresql-backup
+              image: donatowolfisberg/bmw12-simple-postgresql-backup:v1.0.0
+              env:
+                - name: KEY_ID
+                  value: ""
+                - name: APPLICATION_KEY
+                  value: ""
+                - name: S3_REGION
+                  value: us-west-002
+                - name: S3_ENDPOINT
+                  value: s3.us-west-002.backblazeb2.com
+                - name: BUCKET_NAME
+                  value: bmw12-postgresql
+                - name: PG_DATABASES
+                  value: ""
+                - name: PG_HOST
+                  value: ""
+                - name: PG_USER
+                  value: ""
+                - name: PGPASSWORD
+                  value: ""
+          restartPolicy: OnFailure
+
