@@ -21,5 +21,9 @@ This Program creates Postgresql dumps and then uploads them to a configured s3 b
 | PGPASSWORD        | :ballot_box_with_check: |          | The Password of the database User |
 | PG_DATABASES      | :ballot_box_with_check: |          | All Databases that should be Backuped. The Databases are separated through a Comma. sample: db1,db2  |
 
+### Example
+
+An example of a Kubernetes Cronjob configuration can be found under [./k8s-example](https://github.com/SirCremefresh/bmw12-simple-postgresql-backup/tree/master/k8s-example).
+
 ## Versioning
 The docker version is in the format of "vX.Y.Z". All Tags can be found on [DockerHub](https://hub.docker.com/r/donatowolfisberg/bmw12-simple-postgresql-backup/tags).
