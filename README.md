@@ -8,18 +8,18 @@ This Program creates Postgresql dumps and then uploads them to a configured s3 b
 
 ## Configuration
 
-| Env Name          | Required                | Default  |
-| ----------------- | ----------------------- | -------- |
-| KEY_ID            | :ballot_box_with_check: |          |
-| APPLICATION_KEY   | :ballot_box_with_check: |          |
-| S3_REGION         | :ballot_box_with_check: |          |
-| S3_ENDPOINT       | :ballot_box_with_check: |          |
-| BUCKET_NAME       | :ballot_box_with_check: |          |
-| PG_HOST           | :ballot_box_with_check: |          |
-| PG_PORT           | :black_square_button:   | 5432     |
-| PG_USER           | :ballot_box_with_check: |          |
-| PGPASSWORD        | :ballot_box_with_check: |          |
-| PG_DATABASES      | :ballot_box_with_check: |          |
+| Env Name          | Required                | Default  | Description |
+| ----------------- | ----------------------- | -------- | -------- |
+| KEY_ID            | :ballot_box_with_check: |          | The Access Key Id to authenticate with |
+| APPLICATION_KEY   | :ballot_box_with_check: |          | The Access Key Secret to authenticate with |
+| S3_REGION         | :ballot_box_with_check: |          | The Region. sample: us-west-002 |
+| S3_ENDPOINT       | :ballot_box_with_check: |          | The S3 Endpoint. sample: s3.us-west-002.backblazeb2.com |
+| BUCKET_NAME       | :ballot_box_with_check: |          | The Bucket where the backups are saved |
+| PG_HOST           | :ballot_box_with_check: |          | The Database Host |
+| PG_PORT           | :black_square_button:   | 5432     | The Database Port |
+| PG_USER           | :ballot_box_with_check: |          | The User use for the PgDumps |
+| PGPASSWORD        | :ballot_box_with_check: |          | The Password of the database User |
+| PG_DATABASES      | :ballot_box_with_check: |          | All Databases that should be Backuped. The Databases are separated through a Comma. sample: db1,db2  |
 
 ## Versioning
 The docker version is in the format of "vX.Y.Z". All Tags can be found on [DockerHub](https://hub.docker.com/r/donatowolfisberg/bmw12-simple-postgresql-backup/tags).

@@ -11,7 +11,7 @@ const BUCKET_NAME = getFromEnvOrFail('BUCKET_NAME');
 const PG_HOST = getFromEnvOrFail('PG_HOST');
 const PG_PORT = getFromEnvOrDefault('PG_PORT', 5432);
 const PG_USER = getFromEnvOrFail('PG_USER');
-const PG_DATABASES = getFromEnvOrFail('PG_DATABASES');
+const PG_DATABASES = getFromEnvOrFail('PG_DATABASES').map(v => v.trim());
 getFromEnvOrFail('PGPASSWORD'); // check if a postgres password was set
 // const TODAY = new Date(Date.parse('2020-10-29'));
 const TODAY = new Date();
