@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SirCremefresh/bmw12-pgbackrest.git"
+    "url": "git+https://github.com/SirCremefresh/bmw12-simple-postgresql-backup.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/SirCremefresh/bmw12-pgbackrest/issues"
+    "url": "https://github.com/SirCremefresh/bmw12-simple-postgresql-backup/issues"
   },
-  "homepage": "https://github.com/SirCremefresh/bmw12-pgbackrest#readme",
+  "homepage": "https://github.com/SirCremefresh/bmw12-simple-postgresql-backup#readme",
   "dependencies": {
     "aws-sdk": "^2.773.0",
     "dotenv": "^8.2.0"
